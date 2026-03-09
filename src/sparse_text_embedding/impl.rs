@@ -1,5 +1,6 @@
 #[cfg(feature = "hf-hub")]
 use crate::common::load_tokenizer_hf_hub;
+use crate::common::get_intra_threads;
 use crate::{
     models::sparse::{models_list, SparseModel},
     ModelInfo, SparseEmbedding,
@@ -18,7 +19,7 @@ use std::path::PathBuf;
 use tokenizers::Tokenizer;
 
 #[cfg_attr(not(feature = "hf-hub"), allow(unused_imports))]
-use std::thread::available_parallelism;
+
 
 #[cfg(feature = "hf-hub")]
 use super::SparseInitOptions;
@@ -43,7 +44,7 @@ impl SparseTextEmbedding {
             execution_providers,
         } = options;
 
-        let threads = available_parallelism()?.get();
+        let threads = get_intra_threads()?;
 
         let model_repo = SparseTextEmbedding::retrieve_model(
             model_name.clone(),

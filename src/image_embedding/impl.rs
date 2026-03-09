@@ -8,8 +8,9 @@ use ort::{
 };
 #[cfg(feature = "hf-hub")]
 use std::path::PathBuf;
-use std::{io::Cursor, path::Path, thread::available_parallelism};
+use std::{io::Cursor, path::Path};
 
+use crate::common::get_intra_threads;
 use crate::{
     common::normalize, models::image_embedding::models_list, Embedding, ImageEmbeddingModel,
     ModelInfo,
@@ -41,7 +42,7 @@ impl ImageEmbedding {
             show_download_progress,
         } = options;
 
-        let threads = available_parallelism()?.get();
+        let threads = get_intra_threads()?;
 
         let model_repo = ImageEmbedding::retrieve_model(
             model_name.clone(),
@@ -79,7 +80,7 @@ impl ImageEmbedding {
             execution_providers,
         } = options;
 
-        let threads = available_parallelism()?.get();
+        let threads = get_intra_threads()?;
 
         let preprocessor = Compose::from_bytes(model.preprocessor_file)?;
 

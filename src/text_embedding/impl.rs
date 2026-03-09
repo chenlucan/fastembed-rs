@@ -2,6 +2,7 @@
 
 #[cfg(feature = "hf-hub")]
 use crate::common::load_tokenizer_hf_hub;
+use crate::common::get_intra_threads;
 use crate::{
     common::load_tokenizer,
     models::{text_embedding::models_list, ModelTrait},
@@ -21,7 +22,7 @@ use ort::{
 };
 #[cfg(feature = "hf-hub")]
 use std::path::PathBuf;
-use std::thread::available_parallelism;
+
 use tokenizers::Tokenizer;
 
 #[cfg(feature = "hf-hub")]
@@ -45,7 +46,7 @@ impl TextEmbedding {
             cache_dir,
             show_download_progress,
         } = options;
-        let threads = available_parallelism()?.get();
+        let threads = get_intra_threads()?;
 
         let model_repo = TextEmbedding::retrieve_model(
             model_name.clone(),
@@ -98,7 +99,7 @@ impl TextEmbedding {
             max_length,
         } = options;
 
-        let threads = available_parallelism()?.get();
+        let threads = get_intra_threads()?;
 
         let session = {
             let mut session_builder = Session::builder()?

@@ -182,3 +182,14 @@ pub fn pull_from_hf(
     let repo = api.model(model_name);
     Ok(repo)
 }
+
+/// Returns the number of intra-op threads to request when building an ORT session.
+///
+/// NOTE: When `ort::init().with_global_thread_pool()` is called at process startup
+/// (e.g. in coco-terminal) ORT's `DisablePerSessionThreads` mechanism overrides
+/// this value and the global pool's `intra_threads` setting takes precedence.
+/// This function therefore acts only as a fallback for environments that do not
+/// configure a global thread pool.
+pub fn get_intra_threads() -> std::io::Result<usize> {
+    std::thread::available_parallelism().map(|n| n.get())
+}

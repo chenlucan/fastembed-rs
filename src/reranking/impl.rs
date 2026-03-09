@@ -5,10 +5,11 @@ use ort::{
     session::{builder::GraphOptimizationLevel, Session},
     value::Value,
 };
-use std::thread::available_parallelism;
+
 
 #[cfg(feature = "hf-hub")]
 use crate::common::load_tokenizer_hf_hub;
+use crate::common::get_intra_threads;
 use crate::{
     common::load_tokenizer, models::reranking::reranker_model_list, RerankerModel,
     RerankerModelInfo,
@@ -61,7 +62,7 @@ impl TextRerank {
             show_download_progress,
         } = options;
 
-        let threads = available_parallelism()?.get();
+        let threads = get_intra_threads()?;
 
         let cache = Cache::new(cache_dir);
         let api = ApiBuilder::from_cache(cache)
@@ -105,7 +106,7 @@ impl TextRerank {
             max_length,
         } = options;
 
-        let threads = available_parallelism()?.get();
+        let threads = get_intra_threads()?;
 
         let session = Session::builder()?
             .with_execution_providers(execution_providers)?
